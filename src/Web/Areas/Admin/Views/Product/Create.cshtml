@@ -1,0 +1,36 @@
+﻿@model NewProductViewModel
+@{
+    ViewBag.Title = "New Product";
+}
+<div class="row">
+    <div class="col-md-4">
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                <h6>@TempData["InfoMessage"]</h6>
+            </div>
+        }
+        <form method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Name</label>
+                <input asp-for="Name" type="text" class="form-control" />
+                <span asp-validation-for="Name" class="form-text"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CategoryId" class="form-label">Category</label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                    <option value="">Choose a category</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="form-text"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Image" class="form-label">Image</label>
+                <input type="file" asp-for="Image" class="form-control" />
+            </div>
+
+            <button class="btn btn-primary">Add</button>
+        </form>
+    </div>
+</div>
