@@ -1,0 +1,93 @@
+﻿@model ShoppingViewModel
+
+<h1>Products</h1>
+
+<div class="card mb-3 bg-light">
+    <div class="card-body">
+        <form class="row row-cols-sm-auto g-3 align-items-center">
+            <div class="col-12">
+                <label>Category</label>
+            </div>
+
+            <div class="col-12">
+                <select class="form-control" asp-items="Model.Categories" asp-for="CategoryId">
+                    <!--ASP FOR CAT ID-->
+                    <option value="">All</option>
+                </select>
+            </div>
+
+            <div class="col-3">
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </div>
+            <input id="listId" type="hidden" name="listId" value="@Model.ShoppingListId" />
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <div class="row">
+            @foreach (var item in Model.Products)
+            {
+
+                <div class="col-sm-6 col-md-3 col-lg-4 mb-4">
+                    <div class="card p-3">
+                        <img src="~/img/@item.PictureUri" alt="Product Image" class="w-100" style="height:200px" />
+
+                        <div class="card-body">
+                            <h6 class="card-title product-title">@item.Name</h6>
+                            <div class="d-flex align-items-center">
+
+                                <a data-add-item="@item.Id" href="#" class="btn btn-outline-primary ml-auto">
+                                    <i class="fas fa-minus"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            }
+        </div>
+    </div>
+    <div class="col-md-3">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="addedProduct">
+              @foreach (var item in Model.Items)
+              {
+                  <tr>
+                      <td>@item.Product.Name</td>
+                      <td>@item.Description</td>
+                      <td><a href="#">delete</a></td>
+                  </tr>
+              }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts{ 
+<script>
+    $("[data-add-item]").click(function (e) {
+        e.preventDefault();
+        var productId = $(this).data("add-item");
+        var listId = $("#listId").val();
+        $.ajax({
+            url: '@Url.Action("AddToList","Product")',
+            type: 'POST',
+            data: { productId: productId , listId: listId},
+            success: function (data) {
+                $("#addedProduct").append(`<tr><td>${data.itemName}</td><td>${data.description}</td><td><a href="#">delete</a></td></tr>`)
+            }
+        })
+    })
+</script>
+}

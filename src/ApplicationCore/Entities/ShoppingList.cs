@@ -12,7 +12,7 @@ namespace ApplicationCore.Entities
         public string Name { get; set; }
         public bool IsActive { get; set; }
         public string OwnerId { get; set; }
-        public ListStatu ListStatu{ get; set; }
+        public ListStatu ListStatu { get; set; }
         public List<ShoppingListItem> ShoppingListItems { get; set; } = new List<ShoppingListItem>();
         public List<ShoppingListMember> ShoppingListMembers { get; set; } = new List<ShoppingListMember>();
     }

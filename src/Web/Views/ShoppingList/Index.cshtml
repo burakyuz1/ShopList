@@ -1,0 +1,30 @@
+﻿@model List<ShoppingListViewModel>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>List Name</th>
+                <th>Total Items Count</th>
+                <th>Owner Name</th>
+                <th>Total Member</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ListName</td>
+                    <td>@item.TotalItemsCount</td>
+                    <td>@item.OwnerName</td>
+                    <td>@item.TotalMembersCount</td>
+                    <td>
+                        <a href="#">Share</a>|
+                        <a asp-controller="Product" asp-action="Index" asp-route-listId="@item.Id">Start Shopping</a>|
+                        <a href="#">Add Product</a>|
+                        <a href="#">Delete!</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>

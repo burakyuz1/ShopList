@@ -14,5 +14,12 @@ namespace ApplicationCore.Specifications
         {
             Query.Where(x => x.Name.ToLower() == productName.ToLower());
         }
+        public ProductSpecification(int? categoryId)
+        {
+            if (categoryId != null)
+            {
+                Query.Where(a => a.CategoryId == categoryId);
+            }
+        }
     }
 }
