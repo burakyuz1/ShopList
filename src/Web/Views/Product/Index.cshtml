@@ -1,6 +1,6 @@
 ﻿@model ShoppingViewModel
 
-
+<h3>List Name: <span class="font-weight-bold text-muted">@Model.ListName</span></h3> 
 <div class="card mb-3 bg-light">
     @if (!Model.IsAddingProduct)
     {
@@ -57,7 +57,7 @@
             {
                 <div class="col-sm-6 col-md-3 col-lg-4 mb-4">
                     <div class="card p-3">
-                        <img src="~/img/@item.PictureUri" alt="Product Image" class="w-100" style="height:200px" />
+                        <img src="~/img/@(item.PictureUri??"default.png")" alt="Product Image" class="w-100" style="height:200px" />
 
                         <div class="card-body">
                             <h6 class="card-title product-title">@item.Name</h6>
@@ -157,7 +157,7 @@
                 showCancelButton: true
             })
 
-            if (text) {
+            if (true) {
                 let productId = $(this).data("add-item");
                 let listId = $("#listId").val();
                 $.ajax({
@@ -168,7 +168,7 @@
                         $("#addedProduct").append(`
                         <tr>
                             <td>${data.itemName}</td>
-                            <td>${data.description}</td>
+                            <td>${(data.description == null) ? "" : data.description}</td>
                             <td><a data-delete-item="${data.itemId}" class="btn btn-sm btn-danger" href="#"><i class="fas fa-trash"></a></td>
                         </tr>`)
                         toastr.options = {

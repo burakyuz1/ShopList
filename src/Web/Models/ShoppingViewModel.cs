@@ -13,6 +13,7 @@ namespace Web.Models
         public int? CategoryId { get; set; }
         public int? ShoppingListId { get; set; }
         public bool IsBusyToShopping { get; set; }
+        public string ListName { get; set; }
         public List<ProductViewModel> Products { get; set; }
         public List<SelectListItem> Categories { get; set; }
         public List<ShoppingListItem> Items { get; set; }

@@ -1,19 +1,34 @@
 ﻿@model AddMemberViewModel
 
-<form method="post">
-    <div class="form-group">
-        <select asp-items="Model.NonMembers" asp-for="MemberId">
-            <option>Select One</option>
-        </select>
+<div class="col-md-12" style="margin-top:auto; margin-left:33%">
+    <form method="post">
+        <div class="form-group">
+            <div class="row">
+
+                <div class="col-md-3 pr-1">
+                    <select class="form-control" asp-items="Model.NonMembers" asp-for="MemberId">
+                        <option value="0">Select One</option>
+                    </select>
+                </div>
+                <div class="col-md-2 pl-0">
+                    <input type="hidden" name="listId" value="@Model.ListId" />
+                    <button type="submit" class="btn btn-primary" id="addMemberToList">Add</button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </form>
+
+    <div class="col-md-3 pl-0">
+        <ul class="list-group" id="memberList">
+            @foreach (var item in Model.Members)
+            {
+                <li class="list-group-item list-group-item-info">@item.Name</li>
+            }
+        </ul>
     </div>
-    <input type="hidden" name="listId" value="@Model.ListId" />
-    <button class="btn btn-secondary" id="addMemberToList">Add</button>
-</form>
 
-
-<ul id="memberList">
-    @foreach (var item in Model.Members)
-    {
-        <li>@item.Name    <i class="fas fa-times"></i></li>
-    }
-</ul>
+</div>

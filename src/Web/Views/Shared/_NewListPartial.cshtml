@@ -1,0 +1,32 @@
+﻿@model ShoppingListViewModel
+
+<tr>
+    <td>@Model.ListName</td>
+    <td>@Model.TotalItemsCount</td>
+    <td>@Model.OwnerName</td>
+    <td>@Model.TotalMembersCount</td>
+    <td>
+        @{if (Model.IsFreeToShopping)
+            {
+                <p class="text-success"><i class="fa-solid fa-circle-info"></i>  Nobody shopping on list!</p>
+            }
+            else
+            {
+                <p class="text-danger"><i class="fa-solid fa-circle-info"></i>  Somebody shopping on list!</p>
+            }
+        }
+
+    </td>
+    <td>
+        <a class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Index" asp-route-listId="@Model.Id" asp-route-pageSelect="StartShopping"> <i class="fa-solid fa-play"></i> Start Shopping</a>
+        <a class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Index" asp-route-listId="@Model.Id" asp-route-pageSelect="AddProduct"><i class="fas fa-plus-circle"></i> Add</a>
+        <a class="btn btn-sm btn-outline-primary" asp-controller="ShoppingList" asp-action="AddMemberToList" asp-route-listId="@Model.Id"><i class="fa-solid fa-share-nodes"></i></a>
+        @if (Model.IsAuthToDelete)
+        {
+            <form class="d-inline-block" asp-controller="ShoppingList" asp-action="RemoveList" method="post">
+                <input type="hidden" name="listId" value="@Model.Id" />
+                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+            </form>
+
+        }
+    </td>

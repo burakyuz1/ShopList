@@ -1,5 +1,7 @@
 ﻿@model List<ShoppingListViewModel>
 
+    <a id="add-new" class="btn btn-primary mb-3" href="#"> <i class="fas fa-plus"></i>  New List</a>
+
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -11,7 +13,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="lists">
         @foreach (var item in Model)
         {
             <tr>
@@ -32,12 +34,47 @@
 
                 </td>
                 <td>
-                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Index" asp-route-listId="@item.Id" asp-route-pageSelect="StartShopping"> <i class="fa-solid fa-play"></i> Start Shopping</a>
-                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Index" asp-route-listId="@item.Id" asp-route-pageSelect="AddProduct"><i class="fas fa-plus-circle"></i> Add</a>
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="Product" asp-action="Index" asp-route-listId="@item.Id" asp-route-pageSelect="StartShopping"> <i class="fa-solid fa-play"></i> Start Shopping</a>
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="Product" asp-action="Index" asp-route-listId="@item.Id" asp-route-pageSelect="AddProduct"><i class="fas fa-plus-circle"></i> Add</a>
                     <a class="btn btn-sm btn-outline-primary" asp-controller="ShoppingList" asp-action="AddMemberToList" asp-route-listId="@item.Id"><i class="fa-solid fa-share-nodes"></i></a>
-                    <a class="btn btn-sm btn-outline-danger" href="#"><i class="fas fa-trash"></i></a>
+                    @if (item.IsAuthToDelete)
+                    {
+                        <form class="d-inline-block" asp-controller="ShoppingList" asp-action="RemoveList" method="post">
+                            <input type="hidden" name="listId" value="@item.Id" />
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts{ 
+<script>
+    $("#add-new").click(async function () {
+        const { value: listName } = await Swal.fire({
+            title: 'Enter Your List Name',
+            input: 'text',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'You need to write something!'
+                }
+            }
+        })
+
+        if (listName) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddNewList","ShoppingList")',
+                data: { listName: listName },
+                success: (data) => {
+                    $("#lists").append(data);
+                }
+            })
+        }
+    })
+</script>
+}

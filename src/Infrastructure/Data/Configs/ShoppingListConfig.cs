@@ -13,6 +13,11 @@ namespace Infrastructure.Data.Configs
     {
         public void Configure(EntityTypeBuilder<ShoppingList> builder)
         {
+            builder
+                .HasMany(x => x.ShoppingListMembers)
+                .WithOne(x => x.ShoppingList)
+                .HasForeignKey(x => x.ShoppingListId)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Property(x => x.Name).IsRequired().HasMaxLength(50);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using Web.Interfaces;
 
 namespace Web.Controllers
 {
+    [Authorize]
     public class ShoppingListController : Controller
     {
         private readonly IShoppingListViewModelService _shoppingService;
@@ -33,6 +35,21 @@ namespace Web.Controllers
         {
             var model = await _shoppingService.AddMemberAsync(listId, memberId);
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveList(int listId)
+        {
+            await _shoppingService.RemoveList(listId);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewList(string listName)
+        {
+            var model = await _shoppingService.AddNewList(listName);
+            return PartialView("_NewListPartial",model);
         }
     }
 }

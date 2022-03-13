@@ -12,7 +12,7 @@ namespace ApplicationCore.Specifications
     {
         public ShoppingListFilterSpecification(string ownerId, List<int?> memberIds)
         {
-            Query.Where(x => x.OwnerId == ownerId || memberIds.Contains(x.Id)).Include(x => x.ShoppingListItems);
+            Query.Where(x => x.OwnerId == ownerId || memberIds.Contains(x.Id)).Include(x => x.ShoppingListItems).Include(x=>x.ShoppingListMembers);
         }
         public ShoppingListFilterSpecification(int? listId)
         {

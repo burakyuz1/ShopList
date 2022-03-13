@@ -89,7 +89,8 @@ namespace Web.Services
                 ShoppingListId = listId,
                 Items = items,
                 IsBusyToShopping = isBusyToShopping,
-                IsAddingProduct = isAddingProduct
+                IsAddingProduct = isAddingProduct,
+                ListName = shoppingList.Name
             };
         }
         public async Task MakeShoppingListFreeAsync(int listId)

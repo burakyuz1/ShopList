@@ -12,5 +12,7 @@ namespace Web.Interfaces
         Task<List<ShoppingListViewModel>> GetShoppingListViewModelAsync();
         Task<AddMemberViewModel> GetMemberViewModelAsync(int listId);
         Task<AddMemberViewModel> AddMemberAsync(int listId, string memberId);
+        Task RemoveList(int listId);
+        Task<ShoppingListViewModel> AddNewList(string listName);
     }
 }

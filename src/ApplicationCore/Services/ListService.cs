@@ -44,11 +44,19 @@ namespace ApplicationCore.Services
 
         public async Task<ShoppingListMember> AddMemberToShopingListAsync(string memberId, int listId)
         {
-            return  await _membersRepository.AddAsync(new ShoppingListMember()
+            return await _membersRepository.AddAsync(new ShoppingListMember()
             {
                 ShoppingListId = listId,
                 UserId = memberId
             });
+        }
+
+        public async Task<ShoppingList> AddNewShoppingListAsync(string listName, string ownerId)
+        {
+            if (string.IsNullOrEmpty(listName)) throw new ArgumentNullException("List name can not be empty");
+            if (string.IsNullOrEmpty(ownerId)) throw new ArgumentNullException("Owner can not be empty");
+
+            return await _shoppingListRepo.AddAsync(new ShoppingList() { Name = listName, OwnerId = ownerId });
         }
 
         public async Task RemoveItemFromShoppingListAsync(int listItemId, int listId)

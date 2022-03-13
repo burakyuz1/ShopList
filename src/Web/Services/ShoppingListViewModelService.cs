@@ -40,9 +40,29 @@ namespace Web.Services
 
         public async Task<AddMemberViewModel> AddMemberAsync(int listId, string memberId)
         {
-            await _listService.AddMemberToShopingListAsync(memberId, listId);
+            if (memberId != "0")
+            {
+                await _listService.AddMemberToShopingListAsync(memberId, listId);
+            }
             var addMemberVm = await GetMemberViewModelAsync(listId);
             return addMemberVm;
+        }
+
+        public async Task<ShoppingListViewModel> AddNewList(string listName)
+        {
+            string loggedUserId = _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var shopList = await _listService.AddNewShoppingListAsync(listName, loggedUserId);
+            return new()
+            {
+                Id = shopList.Id,
+                ListName = shopList.Name,
+                OwnerId = shopList.OwnerId,
+                OwnerName = (await _userManager.FindByIdAsync(loggedUserId)).Name,
+                Items = new(),
+                Members = new(),
+                IsAuthToDelete = true,
+                IsFreeToShopping = true
+            };
         }
 
         public async Task<AddMemberViewModel> GetMemberViewModelAsync(int listId)
@@ -70,8 +90,6 @@ namespace Web.Services
                 string userName = (await _userManager.FindByIdAsync(item)).UserName;
                 members.Add(item, userName);
             }
-
-
 
             return new()
             {
@@ -101,11 +119,18 @@ namespace Web.Services
                     OwnerId = item.OwnerId,
                     OwnerName = (await _userManager.FindByIdAsync(item.OwnerId.ToString())).Name,
                     ListName = item.Name,
-                    IsFreeToShopping = item.ShopperId == null ? true : false
+                    IsFreeToShopping = item.ShopperId == null ? true : false,
+                    IsAuthToDelete = item.OwnerId == userId ? true : false
                 });
             }
 
             return result;
+        }
+
+        public async Task RemoveList(int listId)
+        {
+            var list = await _shoppingListRepository.GetByIdAsync(listId);
+            await _shoppingListRepository.DeleteAsync(list);
         }
     }
 }

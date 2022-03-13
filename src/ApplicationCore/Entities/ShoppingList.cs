@@ -10,7 +10,6 @@ namespace ApplicationCore.Entities
     public class ShoppingList : BaseEntity
     {
         public string Name { get; set; }
-        public bool IsActive { get; set; }
         public string OwnerId { get; set; }
         public string ShopperId { get; set; }
         public List<ShoppingListItem> ShoppingListItems { get; set; } = new List<ShoppingListItem>();

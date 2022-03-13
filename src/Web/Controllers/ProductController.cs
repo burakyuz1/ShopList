@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using Web.Interfaces;
 
 namespace Web.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly IShoppingViewModelService _productService;
@@ -22,12 +24,14 @@ namespace Web.Controllers
             var model = await _productService.GetProductViewModelAsync(listId, categoryId, pageSelect);
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> AddToList(int productId, int listId, string description)
         {
             var model = await _productService.AddToListAsync(productId, listId, description);
             return Json(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> DeleteFromList(int productId, int listId)
         {
@@ -42,8 +46,5 @@ namespace Web.Controllers
             await _productService.MakeShoppingListFreeAsync(listId);
             return RedirectToAction("Index", "ShoppingList");
         }
-
-      
-
     }
 }
