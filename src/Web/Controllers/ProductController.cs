@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ApplicationCore.Enums;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,27 +10,40 @@ namespace Web.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly IShoppingListViewModelService _shoppingService;
         private readonly IShoppingViewModelService _productService;
 
-        public ProductController(IShoppingListViewModelService shoppingService, IShoppingViewModelService productService)
+        public ProductController(IShoppingViewModelService productService)
         {
-            _shoppingService = shoppingService;
             _productService = productService;
         }
 
-        public async Task<IActionResult> Index(int? listId,int? categoryId)
+        public async Task<IActionResult> Index(int? listId, int? categoryId, UserPreference pageSelect)
         {
-            bool isAvailable = await _shoppingService.IsListAvialable(listId);
-            if (!isAvailable) return RedirectToAction("Index", "ShoppingList");
-            var model = await _productService.GetProductViewModelAsync(listId,categoryId);
+            var model = await _productService.GetProductViewModelAsync(listId, categoryId, pageSelect);
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> AddToList(int productId, int listId)
+        public async Task<IActionResult> AddToList(int productId, int listId, string description)
         {
-            var model = await _productService.AddToListAsync(productId,listId);
+            var model = await _productService.AddToListAsync(productId, listId, description);
             return Json(model);
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteFromList(int productId, int listId)
+        {
+            await _productService.DeleteFromListAsync(productId, listId);
+            return NoContent();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FinishShopping(int listId)
+        {
+            await _productService.MakeShoppingListFreeAsync(listId);
+            return RedirectToAction("Index", "ShoppingList");
+        }
+
+      
+
     }
 }

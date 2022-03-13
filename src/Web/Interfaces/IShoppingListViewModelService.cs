@@ -10,6 +10,7 @@ namespace Web.Interfaces
     public interface IShoppingListViewModelService
     {
         Task<List<ShoppingListViewModel>> GetShoppingListViewModelAsync();
-        Task<bool> IsListAvialable(int? listId);
+        Task<AddMemberViewModel> GetMemberViewModelAsync(int listId);
+        Task<AddMemberViewModel> AddMemberAsync(int listId, string memberId);
     }
 }

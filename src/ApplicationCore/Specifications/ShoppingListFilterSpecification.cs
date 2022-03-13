@@ -10,9 +10,13 @@ namespace ApplicationCore.Specifications
 {
     public class ShoppingListFilterSpecification : Specification<ShoppingList>
     {
-        public ShoppingListFilterSpecification(string ownerId, List<int?> ids)
+        public ShoppingListFilterSpecification(string ownerId, List<int?> memberIds)
         {
-            Query.Where(x => x.OwnerId == ownerId || ids.Contains(x.Id));
+            Query.Where(x => x.OwnerId == ownerId || memberIds.Contains(x.Id)).Include(x => x.ShoppingListItems);
+        }
+        public ShoppingListFilterSpecification(int? listId)
+        {
+            Query.Where(x => x.Id == listId);
         }
     }
 }

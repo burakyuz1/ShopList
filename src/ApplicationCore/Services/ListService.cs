@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,16 @@ namespace ApplicationCore.Services
         private readonly IRepository<ShoppingList> _shoppingListRepo;
         private readonly IRepository<ShoppingListItem> _shoppingListItemRepo;
         private readonly IRepository<Product> _productRepository;
+        private readonly IRepository<ShoppingListMember> _membersRepository;
 
-        public ListService(IRepository<ShoppingList> shoppingListRepo, IRepository<ShoppingListItem> shoppingListItemRepo, IRepository<Product> productRepository)
+        public ListService(IRepository<ShoppingList> shoppingListRepo, IRepository<ShoppingListItem> shoppingListItemRepo, IRepository<Product> productRepository, IRepository<ShoppingListMember> membersRepository)
         {
             _shoppingListRepo = shoppingListRepo;
             _shoppingListItemRepo = shoppingListItemRepo;
             _productRepository = productRepository;
+            _membersRepository = membersRepository;
         }
-        public async Task<ShoppingListItem> AddItemToShoppingListAsync(int? productId, int? listId)
+        public async Task<ShoppingListItem> AddItemToShoppingListAsync(int? productId, int? listId, string description)
         {
             if (!productId.HasValue)
                 throw new ArgumentNullException("Product can not be empty");
@@ -33,10 +36,26 @@ namespace ApplicationCore.Services
             if (product == null)
                 throw new ArgumentNullException("Product can not be found!");
 
-            ShoppingListItem item = new() { ShoppingListId = list.Id, ProductId = product.Id };
+            ShoppingListItem item = new() { ShoppingListId = list.Id, ProductId = product.Id, Description = description };
             list.ShoppingListItems.Add(item);
             await _shoppingListRepo.UpdateAsync(list);
             return item;
+        }
+
+        public async Task<ShoppingListMember> AddMemberToShopingListAsync(string memberId, int listId)
+        {
+            return  await _membersRepository.AddAsync(new ShoppingListMember()
+            {
+                ShoppingListId = listId,
+                UserId = memberId
+            });
+        }
+
+        public async Task RemoveItemFromShoppingListAsync(int listItemId, int listId)
+        {
+            var shoppingItems = await _shoppingListItemRepo.GetAllAsync(new ShoppingListItemsSpecification(listId));
+            var deleteItem = shoppingItems.FirstOrDefault(x => x.Id == listItemId);
+            await _shoppingListItemRepo.DeleteAsync(deleteItem);
         }
     }
 }

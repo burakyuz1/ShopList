@@ -14,5 +14,10 @@ namespace ApplicationCore.Specifications
         {
             Query.Where(x => x.UserId == memberId);
         }
+        public ShoppingListMemberSpecification(int listId)
+        {
+            Query.Where(x => x.ShoppingListId == listId);
+        }
+      
     }
 }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ApplicationCore.Enums
 {
-    public enum ListStatu
+    public enum UserPreference
     {
-        Available,
-        Busy
+        StartShopping,
+        AddProduct
     }
 }

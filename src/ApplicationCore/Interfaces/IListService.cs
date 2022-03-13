@@ -9,6 +9,8 @@ namespace ApplicationCore.Interfaces
 {
     public interface IListService
     {
-        Task<ShoppingListItem> AddItemToShoppingListAsync(int? productId, int? listId);
+        Task<ShoppingListItem> AddItemToShoppingListAsync(int? productId, int? listId,string description);
+        Task RemoveItemFromShoppingListAsync(int listItemId, int listId);
+        Task<ShoppingListMember> AddMemberToShopingListAsync(string memberId, int listId);
     }
 }

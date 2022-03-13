@@ -22,5 +22,17 @@ namespace Web.Controllers
             var model = await _shoppingService.GetShoppingListViewModelAsync();
             return View(model);
         }
+        [HttpGet]
+        public async Task<IActionResult> AddMemberToList(int listId)
+        {
+            var model = await _shoppingService.GetMemberViewModelAsync(listId);
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddMemberToList(int listId, string memberId)
+        {
+            var model = await _shoppingService.AddMemberAsync(listId, memberId);
+            return View(model);
+        }
     }
 }

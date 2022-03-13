@@ -1,8 +1,24 @@
 ﻿@model ShoppingViewModel
 
-<h1>Products</h1>
 
 <div class="card mb-3 bg-light">
+    @if (!Model.IsAddingProduct)
+    {
+        @if (Model.IsBusyToShopping)
+        {
+            <div class="alert alert-danger">
+                <p class="font-weight-bold">Somebody shopping right now! You can not make changes on this list... </p>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-success">
+                <p class="font-weight-bold">You are shopping right now! ONLY YOU can make changes on this list... In order to finish shopping use 'FINISH SHOPPING' button.</p>
+            </div>
+        }
+    }
+
+
     <div class="card-body">
         <form class="row row-cols-sm-auto g-3 align-items-center">
             <div class="col-12">
@@ -11,13 +27,23 @@
 
             <div class="col-12">
                 <select class="form-control" asp-items="Model.Categories" asp-for="CategoryId">
-                    <!--ASP FOR CAT ID-->
                     <option value="">All</option>
                 </select>
             </div>
 
             <div class="col-3">
                 <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </div>
+            <div class="col-9">
+                @if (!Model.IsBusyToShopping && !Model.IsAddingProduct)
+                {
+                    <a id="finishShopping" href="#" class="btn btn-danger mt-3 float-right">Finish Shopping</a>
+                }
+                else
+                {
+                    <a asp-controller="ShoppingList" asp-action="Index" class="btn btn-primary mt-3 float-right">« Back to list</a>
+
+                }
             </div>
             <input id="listId" type="hidden" name="listId" value="@Model.ShoppingListId" />
         </form>
@@ -29,7 +55,6 @@
         <div class="row">
             @foreach (var item in Model.Products)
             {
-
                 <div class="col-sm-6 col-md-3 col-lg-4 mb-4">
                     <div class="card p-3">
                         <img src="~/img/@item.PictureUri" alt="Product Image" class="w-100" style="height:200px" />
@@ -37,17 +62,17 @@
                         <div class="card-body">
                             <h6 class="card-title product-title">@item.Name</h6>
                             <div class="d-flex align-items-center">
+                                @if (!Model.IsBusyToShopping)
+                                {
+                                    <a data-add-item="@item.Id" href="#" class="btn btn-outline-primary ml-auto">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                }
 
-                                <a data-add-item="@item.Id" href="#" class="btn btn-outline-primary ml-auto">
-                                    <i class="fas fa-minus"></i>
-                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
-
             }
         </div>
     </div>
@@ -61,33 +86,115 @@
                 </tr>
             </thead>
             <tbody id="addedProduct">
-              @foreach (var item in Model.Items)
-              {
-                  <tr>
-                      <td>@item.Product.Name</td>
-                      <td>@item.Description</td>
-                      <td><a href="#">delete</a></td>
-                  </tr>
-              }
+                @foreach (var item in Model.Items)
+                {
+                    <tr id="@item.Id">
+                        <td>@item.Product.Name</td>
+                        <td>@item.Description</td>
+                        @if (!Model.IsBusyToShopping)
+                        {
+                            <td><a data-delete-item="@item.Id" class="btn btn-sm btn-danger" href="#"> <i class="fas fa-trash"></i> </a></td>
+                        }
+
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 </div>
+<form id="finishForm" asp-controller="Product" asp-action="FinishShopping" method="post">
+    <input type="hidden" name="listId" value="@Model.ShoppingListId" />
+</form>
 
-@section Scripts{ 
-<script>
-    $("[data-add-item]").click(function (e) {
-        e.preventDefault();
-        var productId = $(this).data("add-item");
-        var listId = $("#listId").val();
+@section Scripts{
+    <script>
+        $("#finishShopping").click(function () {
+            $("#finishForm").submit();
+        });
+
+        $("[data-delete-item]").click(function (e) {
+            e.preventDefault();
+        let productId = $(this).data("delete-item");
+        let listId = $("#listId").val();
         $.ajax({
-            url: '@Url.Action("AddToList","Product")',
+            url: '@Url.Action("DeleteFromList","Product")',
             type: 'POST',
-            data: { productId: productId , listId: listId},
-            success: function (data) {
-                $("#addedProduct").append(`<tr><td>${data.itemName}</td><td>${data.description}</td><td><a href="#">delete</a></td></tr>`)
+            data: { productId: productId, listId: listId },
+            success: function () {
+                var el = document.getElementById(productId)
+                console.log(el.remove());
+
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": true,
+                    "progressBar": false,
+                    "positionClass": "toast-top-center",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "1000",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+                toastr.success("The item has been deleted to the list.");
             }
         })
-    })
-</script>
+    });
+
+        $("[data-add-item]").click(async function (e) {
+            const { value: text } = await Swal.fire({
+                input: 'textarea',
+                inputLabel: 'DESCRIPTION',
+                inputPlaceholder: 'Type your description here...',
+                inputAttributes: {
+                    'aria-label': 'Type your description here'
+                },
+                showCancelButton: true
+            })
+
+            if (text) {
+                let productId = $(this).data("add-item");
+                let listId = $("#listId").val();
+                $.ajax({
+                    url: '@Url.Action("AddToList","Product")',
+                    type: 'POST',
+                    data: { productId: productId, listId: listId, description: text },
+                    success: function (data) {
+                        $("#addedProduct").append(`
+                        <tr>
+                            <td>${data.itemName}</td>
+                            <td>${data.description}</td>
+                            <td><a data-delete-item="${data.itemId}" class="btn btn-sm btn-danger" href="#"><i class="fas fa-trash"></a></td>
+                        </tr>`)
+                        toastr.options = {
+                            "closeButton": false,
+                            "debug": false,
+                            "newestOnTop": true,
+                            "progressBar": false,
+                            "positionClass": "toast-top-center",
+                            "preventDuplicates": false,
+                            "onclick": null,
+                            "showDuration": "1000",
+                            "hideDuration": "1000",
+                            "timeOut": "1000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                        toastr.success("The item has been added to the list.");
+                    }
+                })
+            }
+            e.preventDefault();
+        });
+
+    </script>
+
 }

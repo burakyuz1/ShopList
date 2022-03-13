@@ -1,30 +1,43 @@
 ﻿@model List<ShoppingListViewModel>
 
-    <table class="table table-bordered">
-        <thead>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>List Name</th>
+            <th>Total Items</th>
+            <th>Owner Name</th>
+            <th>Total Members</th>
+            <th>List Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
             <tr>
-                <th>List Name</th>
-                <th>Total Items Count</th>
-                <th>Owner Name</th>
-                <th>Total Member</th>
-                <th></th>
+                <td>@item.ListName</td>
+                <td>@item.TotalItemsCount</td>
+                <td>@item.OwnerName</td>
+                <td>@item.TotalMembersCount</td>
+                <td>
+                    @{if (item.IsFreeToShopping)
+                        {
+                            <p class="text-success"><i class="fa-solid fa-circle-info"></i>  Nobody shopping on list!</p>
+                        }
+                        else
+                        {
+                            <p class="text-danger"><i class="fa-solid fa-circle-info"></i>  Somebody shopping on list!</p>
+                        }
+                    }
+
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Index" asp-route-listId="@item.Id" asp-route-pageSelect="StartShopping"> <i class="fa-solid fa-play"></i> Start Shopping</a>
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Index" asp-route-listId="@item.Id" asp-route-pageSelect="AddProduct"><i class="fas fa-plus-circle"></i> Add</a>
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="ShoppingList" asp-action="AddMemberToList" asp-route-listId="@item.Id"><i class="fa-solid fa-share-nodes"></i></a>
+                    <a class="btn btn-sm btn-outline-danger" href="#"><i class="fas fa-trash"></i></a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.ListName</td>
-                    <td>@item.TotalItemsCount</td>
-                    <td>@item.OwnerName</td>
-                    <td>@item.TotalMembersCount</td>
-                    <td>
-                        <a href="#">Share</a>|
-                        <a asp-controller="Product" asp-action="Index" asp-route-listId="@item.Id">Start Shopping</a>|
-                        <a href="#">Add Product</a>|
-                        <a href="#">Delete!</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
